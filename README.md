@@ -2,7 +2,7 @@
 This app helps students calculate their final grade or personally desired final grade by inputing what grade they have achived or desired from each module and calculates final grade  . The app also connects to Firebase to save and fetch student data.
 
 ## Github Rep
-// final version of AS2
+// https://github.com/Ghaith1231/ResultSimulator
 
 ## Features
 - you can add your module name with description and grades& credits you have achived or desire

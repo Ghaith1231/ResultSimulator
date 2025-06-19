@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -21,11 +20,11 @@ public class RsultSim extends JFrame {
         JComboBox<String> moduleLevelBox = new JComboBox<>(moduleLevels);
         String[] degrees = {"UG", "PG", "FY"};
         JComboBox<String> degreeTypeBox = new JComboBox<>(degrees);
+        JCheckBox directEntryCheckbox = new JCheckBox("Direct Entry to Level 6");
 
         JButton addButton = new JButton("Add Module");
         JButton resultButton = new JButton("Classify Results");
         JButton whatIfButton = new JButton("What-If Mode");
-        JCheckBox directEntryCheckbox = new JCheckBox("Direct Entry to Level 6");
 
         displayArea = new JTextArea(15, 40);
         displayArea.setEditable(false);
@@ -41,20 +40,49 @@ public class RsultSim extends JFrame {
         add(moduleLevelBox);
         add(new JLabel("Degree Type:"));
         add(degreeTypeBox);
+        add(directEntryCheckbox);
         add(addButton);
         add(resultButton);
-        add(directEntryCheckbox);
         add(whatIfButton);
         add(scrollPane);
 
         addButton.addActionListener((ActionEvent e) -> {
-            addModule(moduleNameField.getText(), gradeField.getText(), creditField.getText());
+            String name = moduleNameField.getText().trim();
+            String gradeStr = gradeField.getText().trim();
+            String creditsStr = creditField.getText().trim();
+            String level = (String) moduleLevelBox.getSelectedItem();
+
+            if (gradeStr.isEmpty() || creditsStr.isEmpty()) {
+                displayArea.append("Please insert a valid input in both fields.\n");
+                return;
+            }
+
+            try {
+                int grade = Integer.parseInt(gradeStr);
+                int credits = Integer.parseInt(creditsStr);
+                if (grade < 0 || grade > 100 || credits <= 0) {
+                    displayArea.append("Enter valid grade (0-100) and credit (positive number).\n");
+                    return;
+                }
+
+                ModuleRecord record = new ModuleRecord(name, grade, credits, level);
+                modules.add(record);
+                displayArea.append("Added: " + name + ", Grade: " + grade + ", Credits: " + credits + ", Level: " + level + "\n");
+
+            } catch (NumberFormatException ex) {
+                displayArea.append("Only numeric input allowed for grade and credits.\n");
+            }
+
             moduleNameField.setText("");
             gradeField.setText("");
             creditField.setText("");
         });
 
-        resultButton.addActionListener((ActionEvent e) -> classifyResults());
+        resultButton.addActionListener((ActionEvent e) -> {
+            boolean isDirectEntry = directEntryCheckbox.isSelected();
+            String classification = SimGrades.classify(modules, isDirectEntry);
+            displayArea.append("Classification: " + classification + "\n");
+        });
 
         whatIfButton.addActionListener((ActionEvent e) -> {
             String whatIfStr = JOptionPane.showInputDialog(this, "Enter grade to simulate:");
@@ -63,56 +91,19 @@ public class RsultSim extends JFrame {
                 int totalCredits = 0;
                 int totalScore = 0;
                 for (ModuleRecord m : modules) {
-                    totalCredits += m.getCredits();
-                    totalScore += m.getCredits() * m.getGrade();
+                    totalCredits += m.fetchCredits();
+                    totalScore += m.fetchCredits() * m.fetchGrade();
                 }
                 totalScore += 20 * whatIfGrade;
                 totalCredits += 20;
-                int avg = totalScore / totalCredits;
-                displayArea.append("What-If average: " + avg + "\n");
-                displayArea.append("What-If classification: " + SimGrades.classify(avg) + "\n");
+                double avg = (double) totalScore / totalCredits;
+                int roundedAvg = (int) Math.round(avg);
+                displayArea.append("What-If average: " + roundedAvg + "\n");
+                displayArea.append("What-If classification: " + SimGrades.classify(roundedAvg) + "\n");
             } catch (NumberFormatException ex) {
                 displayArea.append("Invalid input for What-If mode.\n");
             }
         });
-    }
-
-    private void addModule(String name, String gradeStr, String creditsStr) {
-        if (gradeStr.isEmpty() || creditsStr.isEmpty()) {
-            displayArea.append("Please insert a valid input in both fields.\n");
-            return;
-        }
-
-        try {
-            int grade = Integer.parseInt(gradeStr);
-            int credit = Integer.parseInt(creditsStr);
-            if (grade < 0 || grade > 100 || credit <= 0) {
-                displayArea.append("Enter valid grade (0-100) and credit (positive number).\n");
-                return;
-            }
-            ModuleRecord record = new ModuleRecord(name, grade, credit);
-            modules.add(record);
-            displayArea.append("Added: " + name + ", Grade: " + grade + ", Credits: " + credit + "\n");
-        } catch (NumberFormatException e) {
-            displayArea.append("Only numeric input allowed for grade and credits.\n");
-        }
-    }
-
-    private void classifyResults() {
-        int totalCredits = 0;
-        int totalScore = 0;
-        for (ModuleRecord m : modules) {
-            totalCredits += m.getCredits();
-            totalScore += m.getCredits() * m.getGrade();
-        }
-        if (totalCredits == 0) {
-            displayArea.append("No modules to calculate.\n");
-            return;
-        }
-        int average = totalScore / totalCredits;
-        String classification = SimGrades.classify(average);
-        displayArea.append("Average: " + average + "\n");
-        displayArea.append("Classification: " + classification + "\n");
     }
 
     public static void main(String[] args) {
