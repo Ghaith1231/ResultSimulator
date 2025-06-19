@@ -1,112 +1,58 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
-public class RsultSim extends JFrame {
-    private final ArrayList<ModuleRecord> modules = new ArrayList<>();
-    private final JTextArea displayArea;
+public class SimGrades {
 
-    public RsultSim() {
-        setTitle("Result Simulator");
-        setSize(500, 400);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new FlowLayout());
+    public static String classify(ArrayList<ModuleRecord> records, boolean directEntry) {
+        int totalCredits = 0;
+        int totalScore = 0;
+        int l5Credits = 0;
+        int l5Score = 0;
+        int l6Credits = 0;
+        int l6Score = 0;
 
-        JTextField moduleNameField = new JTextField(10);
-        JTextField gradeField = new JTextField(5);
-        JTextField creditField = new JTextField(5);
-        String[] moduleLevels = {"L4", "L5", "L6"};
-        JComboBox<String> moduleLevelBox = new JComboBox<>(moduleLevels);
-        String[] degrees = {"UG", "PG", "FY"};
-        JComboBox<String> degreeTypeBox = new JComboBox<>(degrees);
-        JCheckBox directEntryCheckbox = new JCheckBox("Direct Entry to Level 6");
+        for (ModuleRecord record : records) {
+            String level = record.fetchLevel();
+            int grade = record.fetchGrade();
+            int credit = record.fetchCredits();
 
-        JButton addButton = new JButton("Add Module");
-        JButton resultButton = new JButton("Classify Results");
-        JButton whatIfButton = new JButton("What-If Mode");
-
-        displayArea = new JTextArea(15, 40);
-        displayArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(displayArea);
-
-        add(new JLabel("Module:"));
-        add(moduleNameField);
-        add(new JLabel("Grade:"));
-        add(gradeField);
-        add(new JLabel("Credits:"));
-        add(creditField);
-        add(new JLabel("Module Level:"));
-        add(moduleLevelBox);
-        add(new JLabel("Degree Type:"));
-        add(degreeTypeBox);
-        add(directEntryCheckbox);
-        add(addButton);
-        add(resultButton);
-        add(whatIfButton);
-        add(scrollPane);
-
-        addButton.addActionListener((ActionEvent e) -> {
-            String moduleName = moduleNameField.getText().trim();
-            String gradeStr = gradeField.getText().trim();
-            String creditsStr = creditField.getText().trim();
-            String level = (String) moduleLevelBox.getSelectedItem();
-
-            if (gradeStr.isEmpty() || creditsStr.isEmpty()) {
-                displayArea.append("Please insert a valid input in both fields.\n");
-                return;
+            if (level.equals("L5")) {
+                l5Credits += credit;
+                l5Score += credit * grade;
+            } else if (level.equals("L6")) {
+                l6Credits += credit;
+                l6Score += credit * grade;
             }
 
-            try {
-                int grade = Integer.parseInt(gradeStr);
-                int credits = Integer.parseInt(creditsStr);
-                if (grade < 0 || grade > 100 || credits <= 0) {
-                    displayArea.append("Enter valid grade (0-100) and credit (positive number).\n");
-                    return;
-                }
-                ModuleRecord record = new ModuleRecord(moduleName, grade, credits, level);
-                modules.add(record);
-                displayArea.append("Added: " + moduleName + ", Grade: " + grade + ", Credits: " + credits + ", Level: " + level + "\n");
-            } catch (NumberFormatException ex) {
-                displayArea.append("Only numeric input allowed for grade and credits.\n");
-            }
+            totalCredits += credit;
+            totalScore += credit * grade;
+        }
 
-            moduleNameField.setText("");
-            gradeField.setText("");
-            creditField.setText("");
-        });
+        if (directEntry) {
+            if (l6Credits == 0) return "Insufficient L6 credits";
+            int average = l6Score / l6Credits;
+            return classify(average);
+        } else {
+            int combinedCredits = l5Credits + l6Credits;
+            int combinedScore = l5Score + l6Score;
 
-        resultButton.addActionListener((ActionEvent e) -> {
-            boolean isDirectEntry = directEntryCheckbox.isSelected();
-            String classification = SimGrades.classify(modules, isDirectEntry);
-            displayArea.append("Classification: " + classification + "\n");
-        });
+            if (combinedCredits == 0) return "No L5/L6 modules found";
 
-        whatIfButton.addActionListener((ActionEvent e) -> {
-            String whatIfStr = JOptionPane.showInputDialog(this, "Enter grade to simulate:");
-            try {
-                int whatIfGrade = Integer.parseInt(whatIfStr.trim());
-                int totalCredits = 0;
-                int totalScore = 0;
-                for (ModuleRecord m : modules) {
-                    totalCredits += m.getCredits();
-                    totalScore += m.getCredits() * m.getGrade();
-                }
-                totalScore += 20 * whatIfGrade;
-                totalCredits += 20;
-                int avg = totalScore / totalCredits;
-                displayArea.append("What-If average: " + avg + "\n");
-                displayArea.append("What-If classification: " + SimGrades.classify(avg) + "\n");
-            } catch (NumberFormatException ex) {
-                displayArea.append("Invalid input for What-If mode.\n");
-            }
-        });
+            int average = combinedScore / combinedCredits;
+            return classify(average);
+        }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            RsultSim sim = new RsultSim();
-            sim.setVisible(true);
-        });
+    public static String classify(int average) {
+        if (average >= 70) {
+            return "Excellent (First)";
+        } else if (average >= 60) {
+            return "Very Good (2:1)";
+        } else if (average >= 50) {
+            return "Good (2:2)";
+        } else if (average >= 40) {
+            return "Satisfactory (Third)";
+        } else {
+            return "Fail";
+        }
     }
 }

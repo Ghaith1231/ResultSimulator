@@ -4,7 +4,7 @@ public class ModuleRecord {
     private int credits;
     private String level;
 
-    public ModuleRecord(String name, int grade, int credits) {
+    public ModuleRecord(String name, int grade, int credits, String level) {
         this.name = name;
         this.grade = grade;
         this.credits = credits;

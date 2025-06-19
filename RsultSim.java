@@ -47,7 +47,7 @@ public class RsultSim extends JFrame {
         add(scrollPane);
 
         addButton.addActionListener((ActionEvent e) -> {
-            String name = moduleNameField.getText().trim();
+            String moduleName = moduleNameField.getText().trim();
             String gradeStr = gradeField.getText().trim();
             String creditsStr = creditField.getText().trim();
             String level = (String) moduleLevelBox.getSelectedItem();
@@ -64,11 +64,9 @@ public class RsultSim extends JFrame {
                     displayArea.append("Enter valid grade (0-100) and credit (positive number).\n");
                     return;
                 }
-
-                ModuleRecord record = new ModuleRecord(name, grade, credits, level);
+                ModuleRecord record = new ModuleRecord(moduleName, grade, credits, level);
                 modules.add(record);
-                displayArea.append("Added: " + name + ", Grade: " + grade + ", Credits: " + credits + ", Level: " + level + "\n");
-
+                displayArea.append("Added: " + moduleName + ", Grade: " + grade + ", Credits: " + credits + ", Level: " + level + "\n");
             } catch (NumberFormatException ex) {
                 displayArea.append("Only numeric input allowed for grade and credits.\n");
             }
@@ -96,10 +94,9 @@ public class RsultSim extends JFrame {
                 }
                 totalScore += 20 * whatIfGrade;
                 totalCredits += 20;
-                double avg = (double) totalScore / totalCredits;
-                int roundedAvg = (int) Math.round(avg);
-                displayArea.append("What-If average: " + roundedAvg + "\n");
-                displayArea.append("What-If classification: " + SimGrades.classify(roundedAvg) + "\n");
+                int avg = totalScore / totalCredits;
+                displayArea.append("What-If average: " + avg + "\n");
+                displayArea.append("What-If classification: " + SimGrades.classify(avg) + "\n");
             } catch (NumberFormatException ex) {
                 displayArea.append("Invalid input for What-If mode.\n");
             }
