@@ -15,7 +15,10 @@ public class SimGrades {
             int grade = record.fetchGrade();
             int credit = record.fetchCredits();
 
-            if (level.equals("L5")) {
+            if (level.equals("L4")) {
+                l5Credits += credit;
+                l5Score += credit * grade;
+            } else if (level.equals("L5")) {
                 l5Credits += credit;
                 l5Score += credit * grade;
             } else if (level.equals("L6")) {
@@ -35,7 +38,7 @@ public class SimGrades {
             int combinedCredits = l5Credits + l6Credits;
             int combinedScore = l5Score + l6Score;
 
-            if (combinedCredits == 0) return "No L5/L6 modules found";
+            if (combinedCredits == 0) return "No L4/L5/L6 modules found";
 
             int average = combinedScore / combinedCredits;
             return classify(average);
