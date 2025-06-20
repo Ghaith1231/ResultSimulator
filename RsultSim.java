@@ -61,7 +61,7 @@ public class RsultSim extends JFrame {
                 int grade = Integer.parseInt(gradeStr);
                 int credits = Integer.parseInt(creditsStr);
                 if (grade < 0 || grade > 100 || credits < 0 || credits > 120) {
-                    displayArea.append("Enter valid grade (0-100) and credit (positive number).\n");
+                    displayArea.append("Enter valid grade (0-100) and credit (0-120) (positive number).\n");
                     return;
                 }
                 ModuleRecord record = new ModuleRecord(moduleName, grade, credits, level);
