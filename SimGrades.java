@@ -15,15 +15,21 @@ public class SimGrades {
             int grade = record.fetchGrade();
             int credit = record.fetchCredits();
 
-            if (level.equals("L4")) {
-                l5Credits += credit;
-                l5Score += credit * grade;
-            } else if (level.equals("L5")) {
-                l5Credits += credit;
-                l5Score += credit * grade;
-            } else if (level.equals("L6")) {
-                l6Credits += credit;
-                l6Score += credit * grade;
+            switch (level) {
+                case "L4":
+                    l5Credits += credit;
+                    l5Score += credit * grade;
+                    break;
+                case "L5":
+                    l5Credits += credit;
+                    l5Score += credit * grade;
+                    break;
+                case "L6":
+                    l6Credits += credit;
+                    l6Score += credit * grade;
+                    break;
+                default:
+                    break;
             }
 
             totalCredits += credit;

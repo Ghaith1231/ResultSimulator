@@ -52,8 +52,8 @@ public class RsultSim extends JFrame {
             String creditsStr = creditField.getText().trim();
             String level = (String) moduleLevelBox.getSelectedItem();
 
-            if (gradeStr.isEmpty() || creditsStr.isEmpty()) {
-                displayArea.append("Please insert a valid input in both fields.\n");
+            if (gradeStr.isEmpty() || creditsStr.isEmpty() || moduleName.isEmpty()) {
+                displayArea.append("Please insert a valid input in those 3 fields.\n");
                 return;
             }
 
@@ -83,17 +83,24 @@ public class RsultSim extends JFrame {
         });
 
         whatIfButton.addActionListener((ActionEvent e) -> {
-            String whatIfStr = JOptionPane.showInputDialog(this, "Enter grade to simulate:");
+            String gradesStr = JOptionPane.showInputDialog(this, "Enter grades for the simulation:");
+            String creditsStr = JOptionPane.showInputDialog(this, "Enter credits for the simulation:");
             try {
-                int whatIfGrade = Integer.parseInt(whatIfStr.trim());
+                int whatIfGrade = Integer.parseInt(gradesStr.trim());
+                int whatIfCredits = Integer.parseInt(creditsStr.trim());
+                if (whatIfGrade < 0 || whatIfGrade > 100 || whatIfCredits < 0 || whatIfCredits > 120) {
+                    displayArea.append("Enter valid grade (0-100) and credit (positive number).\n");
+                    return;
+                }
                 int totalCredits = 0;
                 int totalScore = 0;
                 for (ModuleRecord m : modules) {
                     totalCredits += m.fetchCredits();
                     totalScore += m.fetchCredits() * m.fetchGrade();
                 }
-                totalScore += 20 * whatIfGrade;
-                totalCredits += 20;
+                totalScore += whatIfCredits * whatIfGrade;
+                totalCredits += whatIfCredits;
+                
                 int avg = totalScore / totalCredits;
                 displayArea.append("What-If average: " + avg + "\n");
                 displayArea.append("What-If classification: " + SimGrades.classify(avg) + "\n");
