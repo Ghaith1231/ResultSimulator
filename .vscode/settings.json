@@ -3,8 +3,8 @@
         "."
     ],
     "java.project.referencedLibraries": [
-        "junit-jupiter-api-5.9.2.jar",
-        "junit-platform-console-standalone-1.9.2.jar"
+        "junit.jar\\junit-jupiter-api-5.9.2.jar",
+        "junit.jar\\junit-platform-console-standalone-1.9.2.jar"
     ],
     "java.debug.settings.onBuildFailureProceed": true
 }

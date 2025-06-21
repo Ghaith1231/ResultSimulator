@@ -104,8 +104,8 @@ public class RsultSim extends JFrame {
                 }
                 totalScore += whatIfCredits * whatIfGrade;
                 totalCredits += whatIfCredits;
-                
                 int avg = totalScore / totalCredits;
+                
                 displayArea.append("What-If average: " + avg + "\n");
                 displayArea.append("What-If classification: " + SimGrades.classify(avg) + "\n");
             } catch (NumberFormatException ex) {
