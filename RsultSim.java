@@ -1,7 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+
 import java.util.ArrayList;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
+// ModuleRecord class to hold module information
 
 public class RsultSim extends JFrame {
     private final ArrayList<ModuleRecord> modules = new ArrayList<>();
