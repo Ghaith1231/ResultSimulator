@@ -32,7 +32,7 @@ This app helps students calculate their final grade or personally desired final 
 
 ## video
 
-Link of how the grade calculator functions 
+https://www.youtube.com/watch?v=QgbMvox-Cxk
 
 ## reflection
 
